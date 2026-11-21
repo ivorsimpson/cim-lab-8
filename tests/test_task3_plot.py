@@ -1,7 +1,7 @@
 import matplotlib.axes
 import matplotlib.pyplot as plt
 import torch
-from cim_lab_9.my_plots import plot_error_histogram
+from cim_lab_8.my_plots import plot_error_histogram
 
 SENSOR = torch.tensor([0.3, float("nan"), 0.5, 2.8, float("nan")])
 FILTERED = torch.tensor([0.2, 0.4, 0.3, 0.6, 1.0])

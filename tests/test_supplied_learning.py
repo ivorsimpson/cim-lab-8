@@ -1,7 +1,7 @@
 import math
 import torch
-from cim_lab_9.provided.learning import negative_log_likelihood
-from cim_lab_9.provided.simulate import simulate_trajectory
+from cim_lab_8.provided.learning import negative_log_likelihood
+from cim_lab_8.provided.simulate import simulate_trajectory
 
 
 def _nll(data, cfg, q, r):

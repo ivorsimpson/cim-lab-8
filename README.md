@@ -31,7 +31,7 @@ The filter also keeps track of its own **uncertainty**: a region where it is con
 
 ## The code
 
-You only edit the three files at the top of `src/cim_lab_9/`. Everything in `provided/` is supplied, but please read it.
+You only edit the three files at the top of `src/cim_lab_8/`. Everything in `provided/` is supplied, but please read it.
 
 | File | What it does |
 | --- | --- |
@@ -83,7 +83,7 @@ uv run pytest tests/test_task2_gate.py
 Once Tasks 1 and 2 pass, run:
 
 ```bash
-uv run lab9
+uv run kf
 ```
 
 Each run saves its results in its own folder, named after the time and the settings you changed, e.g. `outputs/<date>/14-03-22_default/` or `outputs/<date>/14-05-10_filter.process_noise_std=0.2/`. The last line printed tells you where. Inside:
@@ -117,19 +117,19 @@ Each run saves its results in its own folder, named after the time and the setti
 
   RMSE squares the errors before averaging, so a few large errors (like the deliberately wrong measurements) push it up much more than they push up `mean_error`.
 
-To change a setting, add it to the command, e.g. `uv run lab9 filter.process_noise_std=0.2`. Every setting is listed in `conf/config.yaml`.
+To change a setting, add it to the command, e.g. `uv run kf filter.process_noise_std=0.2`. Every setting is listed in `conf/config.yaml`.
 
 **Windows users:** the quotes in some commands below (e.g. `'[30,31,32,33]'`) are for macOS/Linux and PowerShell. In the old `cmd` prompt, use double quotes instead.
 
 ## Task 3: your own figure
 
-In `my_plots.py`, complete `plot_error_histogram` with Matplotlib. It shows, frame by frame, how big the errors are for the raw sensor and for the filter, as two overlaid histograms with their means marked. The docstring lists the steps. Until you finish it, `uv run lab9` simply skips this figure. Check with:
+In `my_plots.py`, complete `plot_error_histogram` with Matplotlib. It shows, frame by frame, how big the errors are for the raw sensor and for the filter, as two overlaid histograms with their means marked. The docstring lists the steps. Until you finish it, `uv run kf` simply skips this figure. Check with:
 
 ```bash
 uv run pytest tests/test_task3_plot.py
 ```
 
-Then rerun `uv run lab9` and open `error_histogram.png`. Which has the longer tail, and which frames do you think are in it?
+Then rerun `uv run kf` and open `error_histogram.png`. Which has the longer tail, and which frames do you think are in it?
 
 Note that the two histograms don't cover exactly the same frames. The filter has an error at every frame, including the gap. The sensor has none in the gap, but its frames include the deliberately wrong measurements. The dashed lines are plain means, so they will look closer together than the RMSE numbers in `summary.json`.
 
@@ -141,7 +141,7 @@ Change one thing at a time, compare the figures with the default run, and talk i
 
 ### Experiment 1: watch it work
 
-Look at the figures from the default run (`uv run lab9`).
+Look at the figures from the default run (`uv run kf`).
 
 - Is the filter better than the raw sensor? Compare `sensor_alone.rmse_when_measured` with `filter.rmse_when_measured`, and look at your histogram. (`filter.rmse` is higher because it also includes the gap, where the sensor has nothing at all.)
 - What happens to the orange uncertainty during the gap (about 5–6 s; the grey band on the path)? What happens when measurements return?
@@ -152,13 +152,13 @@ Look at the figures from the default run (`uv run lab9`).
 Make the sensor noisier, and tell the filter the truth about it:
 
 ```bash
-uv run lab9 simulation.observation_noise_std=0.8 filter.observation_noise_std=0.8
+uv run kf simulation.observation_noise_std=0.8 filter.observation_noise_std=0.8
 ```
 
 Now make the sensor noisier but **don't** tell the filter:
 
 ```bash
-uv run lab9 simulation.observation_noise_std=0.8
+uv run kf simulation.observation_noise_std=0.8
 ```
 
 - Which run is better, and why?
@@ -167,15 +167,15 @@ uv run lab9 simulation.observation_noise_std=0.8
 ### Experiment 3: how much should it expect the object to wander?
 
 ```bash
-uv run lab9 filter.process_noise_std=0.2
-uv run lab9 filter.process_noise_std=5
+uv run kf filter.process_noise_std=0.2
+uv run kf filter.process_noise_std=5
 ```
 
 - With 0.2, what happens at the turns? Do you see purple stars (track restarts)? Where are they, compared with the turns and the gap? (The count of rejections in a row carries on across the gap.) In `uncertainty_and_error.png`, does the blue error stay below the orange uncertainty?
 - With 5, how does the blue line look on the straight parts?
 - Now switch the restart off and look at the trajectory plot:
   ```bash
-  uv run lab9 filter.process_noise_std=0.2 filter.max_consecutive_rejections=0
+  uv run kf filter.process_noise_std=0.2 filter.max_consecutive_rejections=0
   ```
   Why does one rejected measurement lead to all the later ones being rejected?
 
@@ -186,9 +186,9 @@ uv run lab9 filter.process_noise_std=5
 Turn the gate off, then make the wrong measurements much worse:
 
 ```bash
-uv run lab9 filter.gate_threshold=inf
-uv run lab9 filter.gate_threshold=inf simulation.outlier_scale=6
-uv run lab9 simulation.outlier_scale=6
+uv run kf filter.gate_threshold=inf
+uv run kf filter.gate_threshold=inf simulation.outlier_scale=6
+uv run kf simulation.outlier_scale=6
 ```
 
 - What does a single wrong measurement do to the estimate without the gate? How does your histogram's tail change?
@@ -197,8 +197,8 @@ uv run lab9 simulation.outlier_scale=6
 Now send a burst of four wrong measurements in a row:
 
 ```bash
-uv run lab9 simulation.outlier_indices='[30,31,32,33]'
-uv run lab9 simulation.outlier_indices='[30,31,32,33]' filter.max_consecutive_rejections=0
+uv run kf simulation.outlier_indices='[30,31,32,33]'
+uv run kf simulation.outlier_indices='[30,31,32,33]' filter.max_consecutive_rejections=0
 ```
 
 - The restart rule helped in Experiment 3. What does it do here?
@@ -208,7 +208,7 @@ uv run lab9 simulation.outlier_indices='[30,31,32,33]' filter.max_consecutive_re
 Make the gap longer:
 
 ```bash
-uv run lab9 simulation.missing_intervals='[[4.0,7.0]]'
+uv run kf simulation.missing_intervals='[[4.0,7.0]]'
 ```
 
 - In `uncertainty_and_error.png`, compare how close the blue error gets to the orange uncertainty with the default run. Is the filter still honest about what it does not know?
@@ -222,12 +222,12 @@ Open `noise_sweep.png` from the default run. Each cell is a complete run of the 
 - Some cells are worse than the raw sensor (0.72). Remember that these numbers include the gap, where the sensor has no measurement at all.
 - Which corner is worst? What does the filter believe in that corner?
 - Is the best cell for all frames (left) also best during the gap (right)?
-- Try `uv run lab9 seed=3` (a different random path) and look again. Does the best cell stay put?
+- Try `uv run kf seed=3` (a different random path) and look again. Does the best cell stay put?
 
 Optionally, try a filter that also tracks acceleration:
 
 ```bash
-uv run lab9 filter.model=constant_acceleration
+uv run kf filter.model=constant_acceleration
 ```
 
 Does it handle the turns and the gap differently?
@@ -237,7 +237,7 @@ Does it handle the turns and the gap differently?
 Instead of guessing the two trust settings, PyTorch can adjust them by gradient descent to make the filter as little "surprised" by the measurements as possible:
 
 ```bash
-uv run lab9 experiment.fit_noise=true
+uv run kf experiment.fit_noise=true
 ```
 
 - How close is the learned `observation_noise_std` to the true value (0.30)?

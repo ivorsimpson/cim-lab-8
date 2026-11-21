@@ -1,5 +1,5 @@
 import torch
-from cim_lab_9.provided.kalman import KalmanState, correct, matrices, predict
+from cim_lab_8.provided.kalman import KalmanState, correct, matrices, predict
 
 
 def test_supplied_prediction_moves_with_velocity():

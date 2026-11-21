@@ -1,5 +1,5 @@
 import torch
-from cim_lab_9.metrics import mean_position_error, position_rmse
+from cim_lab_8.metrics import mean_position_error, position_rmse
 
 # One estimate is at (3, 4), which is 5 away from the truth at (0, 0) in a straight line.
 # The other is exactly right. So the distances are 5 and 0.

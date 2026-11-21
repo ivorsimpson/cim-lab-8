@@ -1,9 +1,9 @@
 import torch
 from omegaconf import OmegaConf
-from cim_lab_9.provided.kalman import KalmanState, matrices
-from cim_lab_9.gating import gate_and_update
-from cim_lab_9.provided.tracker import run_filter
-from cim_lab_9.provided.simulate import simulate_trajectory
+from cim_lab_8.provided.kalman import KalmanState, matrices
+from cim_lab_8.gating import gate_and_update
+from cim_lab_8.provided.tracker import run_filter
+from cim_lab_8.provided.simulate import simulate_trajectory
 
 CFG = OmegaConf.create({"gate_threshold": 9.21, "max_consecutive_rejections": 3, "initial_position_std": 0.6,
                         "initial_velocity_std": 1.0, "initial_acceleration_std": 1.0})
