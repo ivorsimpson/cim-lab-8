@@ -1,0 +1,50 @@
+seed: 9  # change this to get a different random path and different sensor noise
+
+# ---- The world: the true motion and the sensor ----
+simulation:
+  duration: 12.0                    # seconds
+  fine_dt: 0.02                     # time step used to simulate the true motion (much finer than the sensor)
+  observation_dt: 0.25              # the sensor reports every 0.25 s; each report time is a "frame"
+  initial_position: [0.0, 0.0]
+  initial_velocity: [1.15, 0.55]
+  acceleration_std: 0.18            # gentle random wandering of the true motion
+  velocity_changes:                 # sudden turns: at `time`, velocity jumps by `delta_velocity`
+    - time: 4.2
+      delta_velocity: [-1.3, 1.05]
+    - time: 8.1
+      delta_velocity: [1.0, -1.35]
+  observation_noise_std: 0.30       # how noisy the sensor REALLY is
+  missing_intervals:                # gaps: [start, end] in seconds with no measurements
+    - [5.0, 6.2]
+  outlier_indices: [12, 33]         # frames whose measurement is deliberately wrong
+  outlier_scale: 2.8                # how far off those wrong measurements are
+
+# ---- The filter: what it assumes about the world ----
+filter:
+  model: constant_velocity          # constant_velocity or constant_acceleration
+  process_noise_std: 1.0            # how much the filter expects the motion to wander from a straight line
+  observation_noise_std: 0.30       # how noisy the filter BELIEVES the sensor is
+  initial_position_std: 0.6         # how unsure the filter is about its very first position
+  initial_velocity_std: 1.0         # ... and about the starting velocity (it starts by guessing zero)
+  initial_acceleration_std: 1.0     # ... and acceleration (constant_acceleration model only)
+  gate_threshold: 9.21              # reject measurements more surprising than this (99% level); inf turns the gate off
+  max_consecutive_rejections: 3     # restart the track after this many rejections in a row; 0 turns restarts off
+
+# ---- The noise sweep (noise_sweep.png): every combination of these is tried ----
+experiment:
+  process_noise_values: [0.2, 0.5, 1.0, 2.0, 5.0]
+  observation_noise_values: [0.15, 0.3, 0.6, 1.2]
+  fit_noise: false                  # Experiment 7: let PyTorch learn the noise levels
+
+# ---- Figures ----
+plots:
+  ellipse_stride: 3                 # draw an uncertainty ellipse every 3rd frame
+  uncertainty_scale: 2.45           # size of the orange uncertainty: the object should be inside it 95% of the time
+  dpi: 150
+
+# Each run is saved in outputs/<date>/<time>_<the settings you changed>/
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}_${run_name:${hydra:job.override_dirname}}
+  job:
+    chdir: true
