@@ -1,4 +1,4 @@
-# CIM Lab 9: Kalman filtering with noisy and missing observations
+# CIM Lab 8: Kalman filtering with noisy and missing observations
 
 ## Aim
 
